@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaldean Numerology Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            display: none;
+        }
+
+        .number-display {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .number-value {
+            font-size: 4em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .number-type {
+            font-size: 1.3em;
+            color: #764ba2;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .analysis {
+            line-height: 1.8;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .analysis h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .master-number {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .special-highlight {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .calculation-steps {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .number-value {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Chaldean Numerology Calculator ✨</h1>
+        
+        <div class="input-group">
+            <label for="nameInput">Enter Your Full Name:</label>
+            <input type="text" id="nameInput" placeholder="e.g., John Michael Smith, Mary O'Connor, Jean-Pierre" />
+        </div>
+        
+        <button class="calculate-btn" onclick="calculateNumerology()">Calculate My Number</button>
+        
+        <div id="result" class="result">
+            <div class="number-display">
+                <div id="numberValue" class="number-value"></div>
+                <div id="numberType" class="number-type"></div>
+            </div>
+            <div id="analysis" class="analysis"></div>
+            <div id="calculationSteps" class="calculation-steps"></div>
+        </div>
+    </div>
+
+    <script>
+        // Chaldean Numerology System
+        const letterValues = {
+            'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+            'B': 2, 'K': 2, 'R': 2,
+            'C': 3, 'G': 3, 'L': 3, 'S': 3,
+            'D': 4, 'M': 4, 'T': 4,
+            'E': 5, 'H': 5, 'N': 5, 'X': 5,
+            'U': 6, 'V': 6, 'W': 6,
+            'O': 7, 'Z': 7,
+            'F': 8, 'P': 8
+        };
+
+        // Chaldean Numerology Meanings
+        const numerologyMeanings = {
+            1: {
+                title: "The Sun - The Individual",
+                description: "In Chaldean numerology, 1 represents the Sun's energy - pure, creative, and independent. You are a natural pioneer with strong willpower and leadership qualities. Your vibration attracts success and recognition, but you must learn to balance ego with humility.",
+                traits: "Solar energy, Creative force, Independence, Leadership, Willpower, Originality",
+                challenges: "Pride, stubbornness, dominating tendencies, impatience with others' limitations."
+            },
+            2: {
+                title: "The Moon - The Collaborator",
+                description: "Number 2 carries the Moon's gentle, receptive energy. You are intuitive, diplomatic, and naturally inclined toward partnership. Your strength lies in cooperation and your ability to work harmoniously with others. You are a natural mediator and peacemaker.",
+                traits: "Lunar intuition, Diplomacy, Cooperation, Sensitivity, Patience, Emotional intelligence",
+                challenges: "Over-sensitivity, indecisiveness, dependency on others, mood swings."
+            },
+            3: {
+                title: "Jupiter - The Communicator",
+                description: "Blessed with Jupiter's expansive energy, you are optimistic, creative, and blessed with natural communication skills. You have a gift for inspiring others through words, art, or performance. Your jovial nature attracts opportunities and friendships.",
+                traits: "Jupiterian expansion, Creativity, Communication, Optimism, Artistic talent, Social magnetism",
+                challenges: "Scattered energy, superficiality, overconfidence, tendency to exaggerate."
+            },
+            4: {
+                title: "Uranus - The Revolutionary",
+                description: "Number 4 in Chaldean numerology carries Uranus's revolutionary energy. You are practical yet innovative, with a unique approach to traditional methods. You build lasting foundations but often challenge conventional wisdom. Your path involves sudden changes and breakthroughs.",
+                traits: "Uranian innovation, Systematic thinking, Reliability, Unconventional wisdom, Breakthrough potential",
+                challenges: "Rebelliousness, unpredictability, rigidity, difficulty with authority."
+            },
+            5: {
+                title: "Mercury - The Messenger",
+                description: "Vibrating with Mercury's quick, adaptable energy, you are versatile, curious, and freedom-loving. You excel in communication, travel, and learning. Your mind is sharp and your interests diverse. You serve as a bridge between different worlds and ideas.",
+                traits: "Mercurial versatility, Quick thinking, Adaptability, Communication skills, Travel, Learning",
+                challenges: "Restlessness, inconsistency, nervous energy, difficulty with commitment."
+            },
+            6: {
+                title: "Venus - The Harmonizer",
+                description: "Number 6 resonates with Venus's loving, nurturing energy. You are naturally drawn to beauty, harmony, and service to others. Your home and family are central to your happiness. You have healing abilities and a strong sense of responsibility toward loved ones.",
+                traits: "Venusian love, Nurturing nature, Aesthetic sense, Healing abilities, Family devotion, Harmony",
+                challenges: "Over-protectiveness, worry, self-sacrifice, perfectionism about appearances."
+            },
+            7: {
+                title: "Neptune - The Mystic",
+                description: "Carrying Neptune's mystical vibration, you are spiritually inclined, intuitive, and drawn to life's deeper mysteries. You have natural psychic abilities and a strong connection to the spiritual realm. Your path involves inner discovery and spiritual teaching.",
+                traits: "Neptunian mysticism, Spiritual insight, Psychic abilities, Analytical mind, Introspection, Wisdom",
+                challenges: "Otherworldliness, escapism, pessimism, difficulty with practical matters."
+            },
+            8: {
+                title: "Saturn - The Executive",
+                description: "Number 8 embodies Saturn's disciplined, ambitious energy. You have exceptional organizational skills and the ability to achieve material success through persistence. Your lessons involve learning proper use of power and authority while maintaining ethical standards.",
+                traits: "Saturnian discipline, Business acumen, Material mastery, Organization, Authority, Endurance",
+                challenges: "Materialism, workaholic tendencies, abuse of power, coldness, impatience."
+            },
+            9: {
+                title: "Mars - The Warrior",
+                description: "In Chaldean numerology, 9 represents Mars's powerful, transformative energy. You are courageous, passionate, and driven by strong convictions. Your path involves fighting for justice and serving humanity. You have the power to inspire and lead others through difficult times.",
+                traits: "Martian courage, Humanitarian spirit, Leadership, Passion, Justice, Transformation",
+                challenges: "Aggression, impatience, self-righteousness, tendency toward conflict."
+            },
+            11: {
+                title: "The Illuminated Master",
+                description: "Number 11 is a master number carrying double lunar energy with spiritual illumination. You are highly intuitive with psychic abilities and the potential for spiritual leadership. Your mission involves bringing light and inspiration to others through your heightened awareness.",
+                traits: "Spiritual illumination, Psychic abilities, Intuitive wisdom, Inspirational leadership, Visionary insight",
+                challenges: "Nervous tension, over-sensitivity, difficulty grounding spiritual insights, perfectionism."
+            },
+            22: {
+                title: "The Master Builder of Dreams",
+                description: "Master number 22 combines the spiritual insight of 11 with the practical building power of 4. You have the rare ability to manifest spiritual ideals in the material world. Your mission involves creating lasting structures that serve humanity's highest good.",
+                traits: "Master manifestation, Spiritual practicality, Visionary building, Global thinking, Material-spiritual bridge",
+                challenges: "Overwhelming responsibility, self-doubt about abilities, difficulty balancing spiritual and material."
+            },
+            33: {
+                title: "The Master of Compassion",
+                description: "Number 33 represents the highest vibration of loving service. You are here to heal, teach, and uplift humanity through unconditional love. Your path involves sacrificial service and the ability to see the divine in all beings. You are a natural healer and spiritual teacher.",
+                traits: "Universal love, Master healing, Selfless service, Spiritual teaching, Divine compassion, Christ consciousness",
+                challenges: "Martyrdom complex, taking on others' burdens, difficulty with personal boundaries, overwhelming empathy."
+            }
+        };
+
+        function calculateNumerology() {
+            const name = document.getElementById('nameInput').value.trim();
+            
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+
+            // Check for numbers in the input
+            if (/\d/.test(name)) {
+                alert('Please enter only letters and spaces. Numbers are not allowed in names for numerology calculation.');
+                return;
+            }
+
+            // Check for special characters (except spaces, hyphens, apostrophes which are common in names)
+            const allowedPattern = /^[a-zA-Z\s\-'\.]+$/;
+            if (!allowedPattern.test(name)) {
+                alert('Please use only letters, spaces, hyphens (-), and apostrophes (\') in your name.');
+                return;
+            }
+
+            // Convert to uppercase and remove spaces, hyphens, apostrophes, and periods for calculation
+            const cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
+            
+            if (!cleanName) {
+                alert('Please enter a valid name with at least one letter');
+                return;
+            }
+
+            // Show user what name is being used for calculation if it was modified
+            const originalLettersOnly = name.replace(/[^a-zA-Z]/g, '');
+            if (originalLettersOnly.toLowerCase() !== cleanName.toLowerCase()) {
+                const userConfirm = confirm(`We'll calculate using only the letters: "${cleanName}"\nFrom your input: "${name}"\n\nProceed with calculation?`);
+                if (!userConfirm) {
+                    return;
+                }
+            }
+
+            let sum = 0;
+            let calculation = '';
+            
+            // Calculate sum of all letters
+            for (let i = 0; i < cleanName.length; i++) {
+                const letter = cleanName[i];
+                const value = letterValues[letter];
+                sum += value;
+                calculation += `${letter}=${value}`;
+                if (i < cleanName.length - 1) calculation += ' + ';
+            }
+
+            calculation += ` = ${sum}`;
+            
+            // Reduce to single digit, but preserve master numbers
+            let finalNumber = sum;
+            let reductionSteps = '';
+            
+            while (finalNumber > 9 && finalNumber !== 11 && finalNumber !== 22 && finalNumber !== 33) {
+                const digits = finalNumber.toString().split('').map(Number);
+                const newSum = digits.reduce((a, b) => a + b, 0);
+                reductionSteps += `${finalNumber} → ${digits.join(' + ')} = ${newSum}\n`;
+                finalNumber = newSum;
+            }
+
+            displayResult(finalNumber, name, calculation, reductionSteps);
+        }
+
+        function displayResult(number, name, calculation, reductionSteps) {
+            const meaning = numerologyMeanings[number];
+            
+            document.getElementById('numberValue').textContent = number;
+            
+            const numberTypeEl = document.getElementById('numberType');
+            if ([11, 22, 33].includes(number)) {
+                numberTypeEl.innerHTML = `<span class="master-number">Master Number</span>`;
+            } else {
+                numberTypeEl.textContent = 'Life Path Number';
+            }
+            
+            const analysisEl = document.getElementById('analysis');
+            analysisEl.innerHTML = `
+                <h3>${meaning.title}</h3>
+                <p><strong>Description:</strong> ${meaning.description}</p>
+                <div class="special-highlight">
+                    <p><strong>Key Traits:</strong> ${meaning.traits}</p>
+                </div>
+                <p><strong>Challenges:</strong> ${meaning.challenges}</p>
+            `;
+            
+            const calculationEl = document.getElementById('calculationSteps');
+            calculationEl.innerHTML = `
+                <h4>How we calculated your number (Chaldean System):</h4>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Letter Values:</strong> ${calculation}</p>
+                <p><em>Note: Uses ancient Chaldean numerology system where each letter has a unique vibration</em></p>
+                ${reductionSteps ? `<p><strong>Reduction:</strong></p><pre>${reductionSteps}</pre>` : ''}
+                <p><strong>Final Number:</strong> ${number}</p>
+            `;
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Allow Enter key to trigger calculation
+        document.getElementById('nameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateNumerology();
+            }
+        });
+    </script>
+</body>
+</html>
